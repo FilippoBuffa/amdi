@@ -1,0 +1,41 @@
+GVL_python.iMachineState (INT)  
+ 	IDLE := 0,
+	ENABLING := 1,
+	READY := 2,
+	AUTOMATIC := 10, 
+    CALIBRATION := 20, //SEMI-AUTOMATICO
+	GRR := 30,
+	DUMMY := 40,
+	MANUAL := 100,
+    ERROR:= 90,
+	//WARNING:= 91,
+    RESETTING := 92
+
+GVL_python.bBtnResetinhibited if active no reset. 
+
+iMachineState (90) -reset-> iMachineState (0) -start-> iMachineState (1) -...> iMachineState (2) -start->iMachineState (10)
+
+ 
+ GVL_python.iStatusReques	
+    // 1 MAN
+
+	// 2 AUTO
+
+	// 3 CALIBRATION
+
+	// 4 GRR
+
+	// 5 DUMMY
+
+For automatic start I have to put 2 on that variable. 
+ 
+
+jumpRequest			: BOOL; 	// PC -> PLC ask jump (plc reset variable when done)
+ 
+feedRequest			: BOOL;		// PC -> PLC ask feeding (plc reset variable when done)
+ 
+lightOnRequest		: BOOL;		// PC -> PLC turn light ON
+ 
+lightOffRequest		: BOOL;		// PC -> PLC turn light ON
+ 
+ 

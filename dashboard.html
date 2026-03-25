@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>AMDI — HMI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d1117;
+    --bg2:       #161b22;
+    --bg3:       #1c2333;
+    --border:    #21262d;
+    --border2:   #30363d;
+
+    --orange:    #e8600a;
+    --orange2:   #ff7b2e;
+    --teal:      #2a7a8a;
+    --teal2:     #3cb0c4;
+
+    --green:     #22c55e;
+    --green-bg:  rgba(34,197,94,0.12);
+    --green-brd: rgba(34,197,94,0.4);
+
+    --red:       #ef4444;
+    --red-bg:    rgba(239,68,68,0.12);
+    --red-brd:   rgba(239,68,68,0.4);
+
+    --amber:     #f59e0b;
+    --amber-bg:  rgba(245,158,11,0.12);
+    --amber-brd: rgba(245,158,11,0.4);
+
+    --blue:      #3b82f6;
+    --blue-bg:   rgba(59,130,246,0.10);
+    --blue-brd:  rgba(59,130,246,0.3);
+
+    --text:      #e6edf3;
+    --text2:     #8b949e;
+    --text3:     #484f58;
+
+    --sans: 'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 80px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .header-logo img {
+    height: 44px;
+    width: auto;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border2);
+  }
+
+  .header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .header-title-main {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .header-title-sub {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .plc-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    background: var(--bg3);
+  }
+
+  .plc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+
+  .plc-dot.connected {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .plc-dot.error {
+    background: var(--red);
+    box-shadow: 0 0 8px var(--red);
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.5; }
+  }
+
+  .plc-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+
+  .datetime {
+    text-align: right;
+  }
+
+  .datetime-time {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .datetime-date {
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 0.1em;
+    margin-top: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ─── MAIN BODY ─── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+  }
+
+  /* ─── MACHINE STATE STRIP ─── */
+  .state-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 48px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .state-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+
+  .state-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    transition: all 0.3s;
+  }
+
+  .state-badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text3);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+
+  .state-badge-text {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--text2);
+    text-transform: uppercase;
+    transition: color 0.3s;
+    min-width: 140px;
+    text-align: center;
+  }
+
+  /* State color variants */
+  .state-badge.s-idle {
+    border-color: var(--border2);
+  }
+  .state-badge.s-idle .state-badge-dot { background: var(--text3); }
+  .state-badge.s-idle .state-badge-text { color: var(--text2); }
+
+  .state-badge.s-starting {
+    border-color: var(--amber-brd);
+    background: var(--amber-bg);
+    animation: blink 1s ease-in-out infinite;
+  }
+  .state-badge.s-starting .state-badge-dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .state-badge.s-starting .state-badge-text { color: var(--amber); }
+
+  .state-badge.s-running {
+    border-color: var(--green-brd);
+    background: var(--green-bg);
+  }
+  .state-badge.s-running .state-badge-dot { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse-glow 1.5s ease-in-out infinite; }
+  .state-badge.s-running .state-badge-text { color: var(--green); }
+
+  .state-badge.s-error {
+    border-color: var(--red-brd);
+    background: var(--red-bg);
+    animation: blink 0.7s ease-in-out infinite;
+  }
+  .state-badge.s-error .state-badge-dot { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  .state-badge.s-error .state-badge-text { color: var(--red); }
+
+  .state-badge.s-resetting {
+    border-color: var(--amber-brd);
+    background: var(--amber-bg);
+    animation: blink 1.2s ease-in-out infinite;
+  }
+  .state-badge.s-resetting .state-badge-dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .state-badge.s-resetting .state-badge-text { color: var(--amber); }
+
+  .state-badge.s-special {
+    border-color: var(--blue-brd);
+    background: var(--blue-bg);
+  }
+  .state-badge.s-special .state-badge-dot { background: var(--blue); box-shadow: 0 0 8px var(--blue); }
+  .state-badge.s-special .state-badge-text { color: var(--blue); }
+
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  .state-code {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ─── BUTTON AREA ─── */
+  .button-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Subtle radial glow behind button */
+  .button-area::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,96,10,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    transition: background 0.5s;
+  }
+
+  .button-area.glow-green::before {
+    background: radial-gradient(circle, rgba(34,197,94,0.07) 0%, transparent 70%);
+  }
+
+  .button-area.glow-red::before {
+    background: radial-gradient(circle, rgba(239,68,68,0.07) 0%, transparent 70%);
+  }
+
+  .button-area.glow-amber::before {
+    background: radial-gradient(circle, rgba(245,158,11,0.07) 0%, transparent 70%);
+  }
+
+  /* The big button */
+  .main-btn {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--sans);
+    transition: transform 0.1s, box-shadow 0.3s, background 0.3s;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Outer ring */
+  .main-btn::before {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  /* Second outer ring */
+  .main-btn::after {
+    content: '';
+    position: absolute;
+    inset: -28px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+
+  .main-btn:active {
+    transform: scale(0.96);
+  }
+
+  .main-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
+  }
+
+  /* START state */
+  .main-btn.btn-start {
+    background: radial-gradient(circle at 35% 35%, #2ecc71, #16a34a);
+    box-shadow:
+      0 0 40px rgba(34,197,94,0.4),
+      0 0 80px rgba(34,197,94,0.15),
+      inset 0 2px 4px rgba(255,255,255,0.15),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .main-btn.btn-start::before {
+    border-color: rgba(34,197,94,0.5);
+    box-shadow: 0 0 20px rgba(34,197,94,0.2);
+  }
+  .main-btn.btn-start::after {
+    border-color: rgba(34,197,94,0.2);
+  }
+  .main-btn.btn-start:hover:not(:disabled) {
+    box-shadow:
+      0 0 60px rgba(34,197,94,0.5),
+      0 0 100px rgba(34,197,94,0.2),
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+
+  /* STOP state */
+  .main-btn.btn-stop {
+    background: radial-gradient(circle at 35% 35%, #f87171, #dc2626);
+    box-shadow:
+      0 0 40px rgba(239,68,68,0.4),
+      0 0 80px rgba(239,68,68,0.15),
+      inset 0 2px 4px rgba(255,255,255,0.15),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .main-btn.btn-stop::before {
+    border-color: rgba(239,68,68,0.5);
+    box-shadow: 0 0 20px rgba(239,68,68,0.2);
+  }
+  .main-btn.btn-stop::after {
+    border-color: rgba(239,68,68,0.2);
+  }
+  .main-btn.btn-stop:hover:not(:disabled) {
+    box-shadow:
+      0 0 60px rgba(239,68,68,0.5),
+      0 0 100px rgba(239,68,68,0.2),
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+
+  /* RESET state */
+  .main-btn.btn-reset {
+    background: radial-gradient(circle at 35% 35%, #fbbf24, #d97706);
+    box-shadow:
+      0 0 40px rgba(245,158,11,0.4),
+      0 0 80px rgba(245,158,11,0.15),
+      inset 0 2px 4px rgba(255,255,255,0.15),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .main-btn.btn-reset::before {
+    border-color: rgba(245,158,11,0.5);
+    box-shadow: 0 0 20px rgba(245,158,11,0.2);
+  }
+  .main-btn.btn-reset::after {
+    border-color: rgba(245,158,11,0.2);
+  }
+  .main-btn.btn-reset:hover:not(:disabled) {
+    box-shadow:
+      0 0 60px rgba(245,158,11,0.5),
+      0 0 100px rgba(245,158,11,0.2),
+      inset 0 2px 4px rgba(255,255,255,0.2),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+
+  /* BUSY / disabled state */
+  .main-btn.btn-busy {
+    background: radial-gradient(circle at 35% 35%, #4b5563, #374151);
+    box-shadow:
+      0 0 20px rgba(100,120,140,0.2),
+      inset 0 2px 4px rgba(255,255,255,0.05),
+      inset 0 -3px 6px rgba(0,0,0,0.3);
+  }
+  .main-btn.btn-busy::before { border-color: rgba(100,120,140,0.3); }
+  .main-btn.btn-busy::after  { border-color: rgba(100,120,140,0.15); }
+
+  .btn-label {
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .btn-sublabel {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+
+  /* Pulse ring animation for running state */
+  .pulse-ring {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .main-btn.btn-stop .pulse-ring {
+    border-color: rgba(239,68,68,0.5);
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0%   { inset: -12px; opacity: 0.8; }
+    100% { inset: -50px; opacity: 0; }
+  }
+
+  /* ─── STATISTICS STRIP ─── */
+  .stats-strip {
+    flex-shrink: 0;
+    padding: 20px 48px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .stat-card {
+    flex: 1;
+    max-width: 280px;
+    min-width: 160px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .stat-card.ok::before    { background: var(--green); }
+  .stat-card.ko::before    { background: var(--red); }
+  .stat-card.slitted::before { background: var(--teal2); }
+  .stat-card.placeholder::before { background: var(--border2); }
+
+  .stat-card.ok     { border-color: rgba(34,197,94,0.25); }
+  .stat-card.ko     { border-color: rgba(239,68,68,0.25); }
+  .stat-card.slitted { border-color: rgba(60,176,196,0.25); }
+
+  .stat-card-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  .stat-card.ok .stat-card-label     { color: rgba(34,197,94,0.7); }
+  .stat-card.ko .stat-card-label     { color: rgba(239,68,68,0.7); }
+  .stat-card.slitted .stat-card-label { color: rgba(60,176,196,0.7); }
+
+  .stat-card-value {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-card.ok .stat-card-value     { color: var(--green); }
+  .stat-card.ko .stat-card-value     { color: var(--red); }
+  .stat-card.slitted .stat-card-value { color: var(--teal2); }
+  .stat-card.placeholder .stat-card-value { color: var(--text3); }
+
+  .stat-card-sub {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 0.05em;
+  }
+
+  /* Placeholder card */
+  .stat-card.placeholder {
+    border-style: dashed;
+    border-color: var(--border);
+    opacity: 0.5;
+  }
+
+  /* ─── LIVE STATS PANEL ─── */
+  .live-stats {
+    position: absolute;
+    right: 48px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    min-width: 220px;
+  }
+
+  .live-stats-title {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .results-grid {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .results-grid th {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 0 6px 8px;
+    width: 36px;
+  }
+
+  .results-grid td.row-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 5px 10px 5px 0;
+    white-space: nowrap;
+  }
+
+  .results-grid td.led-cell {
+    text-align: center;
+    padding: 5px 6px;
+  }
+
+  .led {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text3);
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  .led.ok {
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(34,197,94,0.6);
+  }
+
+  .led.ko {
+    background: var(--red);
+    box-shadow: 0 0 6px rgba(239,68,68,0.6);
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    padding: 12px 28px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 9999;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast.error {
+    background: var(--red-bg);
+    border: 1px solid var(--red-brd);
+    color: var(--red);
+  }
+
+  .toast.warn {
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-brd);
+    color: var(--amber);
+  }
+
+  .toast.info {
+    background: var(--green-bg);
+    border: 1px solid var(--green-brd);
+    color: var(--green);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-logo">
+    <img src="/static/img/logo.png" alt="Cognita" onerror="this.style.display='none'">
+    <div class="header-divider"></div>
+    <div class="header-title">
+      <div class="header-title-main">AMDI</div>
+      <div class="header-title-sub">Automated Machine Vision Inspection</div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <div class="plc-status">
+      <div class="plc-dot" id="plc-dot"></div>
+      <span class="plc-label" id="plc-label">PLC —</span>
+    </div>
+    <div class="datetime">
+      <div class="datetime-time" id="clock">--:--:--</div>
+      <div class="datetime-date" id="dateline">---</div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── MAIN ─── -->
+<div class="main">
+
+  <!-- Machine state strip -->
+  <div class="state-strip">
+    <span class="state-label">Machine State</span>
+    <div class="state-badge s-idle" id="state-badge">
+      <div class="state-badge-dot"></div>
+      <div class="state-badge-text" id="state-text">IDLE</div>
+    </div>
+    <span class="state-code" id="state-code">STATE 0</span>
+  </div>
+
+  <!-- Button area -->
+  <div class="button-area glow-green" id="button-area">
+    <button class="main-btn btn-start" id="main-btn" onclick="handleButton()">
+      <div class="pulse-ring"></div>
+      <div class="btn-label" id="btn-label">START</div>
+      <div class="btn-sublabel" id="btn-sublabel">Press to begin</div>
+    </button>
+
+    <!-- Live cycle results panel -->
+    <div class="live-stats">
+      <div class="live-stats-title">Cycle Results</div>
+      <table class="results-grid">
+        <thead>
+          <tr>
+            <th></th>
+            <th>1</th><th>2</th><th>3</th><th>4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Leak</td>
+            <td class="led-cell"><div class="led" id="s-leak-1"></div></td>
+            <td class="led-cell"><div class="led" id="s-leak-2"></div></td>
+            <td class="led-cell"><div class="led" id="s-leak-3"></div></td>
+            <td class="led-cell"><div class="led" id="s-leak-4"></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Flow</td>
+            <td class="led-cell"><div class="led" id="s-flow-1"></div></td>
+            <td class="led-cell"><div class="led" id="s-flow-2"></div></td>
+            <td class="led-cell"><div class="led" id="s-flow-3"></div></td>
+            <td class="led-cell"><div class="led" id="s-flow-4"></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Inspect</td>
+            <td class="led-cell"><div class="led" id="s-inspect-1"></div></td>
+            <td class="led-cell"><div class="led" id="s-inspect-2"></div></td>
+            <td class="led-cell"><div class="led" id="s-inspect-3"></div></td>
+            <td class="led-cell"><div class="led" id="s-inspect-4"></div></td>
+          </tr>
+          <tr>
+            <td class="row-label">Cluster</td>
+            <td class="led-cell"><div class="led" id="s-cluster-1"></div></td>
+            <td class="led-cell"><div class="led" id="s-cluster-2"></div></td>
+            <td class="led-cell"><div class="led" id="s-cluster-3"></div></td>
+            <td class="led-cell"><div class="led" id="s-cluster-4"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Statistics strip -->
+  <div class="stats-strip">
+
+    <div class="stat-card ok">
+      <div class="stat-card-label">OK</div>
+      <div class="stat-card-value" id="stat-ok">—</div>
+      <div class="stat-card-sub">Accepted pieces</div>
+    </div>
+
+    <div class="stat-card ko">
+      <div class="stat-card-label">KO</div>
+      <div class="stat-card-value" id="stat-ko">—</div>
+      <div class="stat-card-sub">Rejected pieces</div>
+    </div>
+
+    <div class="stat-card slitted">
+      <div class="stat-card-label">Slitted</div>
+      <div class="stat-card-value" id="stat-slitted">—</div>
+      <div class="stat-card-sub">Slitted pieces</div>
+    </div>
+
+    <div class="stat-card placeholder">
+      <div class="stat-card-label">—</div>
+      <div class="stat-card-value">—</div>
+      <div class="stat-card-sub">Reserved</div>
+    </div>
+
+    <div class="stat-card placeholder">
+      <div class="stat-card-label">—</div>
+      <div class="stat-card-value">—</div>
+      <div class="stat-card-sub">Reserved</div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── PLC Machine State constants ───────────────────────────────────────────
+const STATE = {
+  IDLE:        0,
+  ENABLING:    1,
+  READY:       2,
+  AUTOMATIC:   10,
+  CALIBRATION: 20,
+  GRR:         30,
+  DUMMY:       40,
+  ERROR:       90,
+  RESETTING:   92,
+  MANUAL:      100,
+};
+
+const STATE_NAMES = {
+  0:   'IDLE',
+  1:   'ENABLING',
+  2:   'READY',
+  10:  'AUTOMATIC',
+  20:  'CALIBRATION',
+  30:  'GRR',
+  40:  'DUMMY',
+  90:  'ERROR',
+  92:  'RESETTING',
+  100: 'MANUAL',
+};
+
+// ─── Local state ───────────────────────────────────────────────────────────
+let machineState      = STATE.IDLE;
+let resetInhibited    = false;
+let buttonBusy        = false;        // debounce while API call in flight
+
+// ─── Clock ────────────────────────────────────────────────────────────────
+const DAYS  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toTimeString().slice(0, 8);
+  document.getElementById('dateline').textContent =
+    DAYS[now.getDay()] + ' ' + now.getDate() + ' ' + MONTHS[now.getMonth()] + ' ' + now.getFullYear();
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── Render UI from machineState ──────────────────────────────────────────
+function renderState(stateNum, inhibited) {
+  machineState   = stateNum;
+  resetInhibited = inhibited;
+
+  const btn        = document.getElementById('main-btn');
+  const btnLabel   = document.getElementById('btn-label');
+  const btnSub     = document.getElementById('btn-sublabel');
+  const badge      = document.getElementById('state-badge');
+  const badgeText  = document.getElementById('state-text');
+  const stateCode  = document.getElementById('state-code');
+  const area       = document.getElementById('button-area');
+
+  // State code display
+  stateCode.textContent = 'STATE ' + stateNum;
+  badgeText.textContent = STATE_NAMES[stateNum] || 'STATE ' + stateNum;
+
+  // Remove all btn / badge / area classes
+  btn.className   = 'main-btn';
+  badge.className = 'state-badge';
+  area.className  = 'button-area';
+  btn.disabled    = false;
+  btn.innerHTML   = '<div class="pulse-ring"></div>'
+                  + '<div class="btn-label" id="btn-label"></div>'
+                  + '<div class="btn-sublabel" id="btn-sublabel"></div>';
+
+  // Re-grab references after innerHTML reset
+  const lbl = btn.querySelector('.btn-label');
+  const sub = btn.querySelector('.btn-sublabel');
+
+  if (stateNum === STATE.IDLE) {
+    btn.classList.add('btn-start');
+    badge.classList.add('s-idle');
+    area.classList.add('glow-green');
+    lbl.textContent = 'ENABLE';
+    sub.textContent = 'Press to enable';
+
+  } else if (stateNum === STATE.ENABLING) {
+    btn.classList.add('btn-busy');
+    badge.classList.add('s-starting');
+    area.classList.add('glow-amber');
+    btn.disabled = true;
+    lbl.textContent = 'ENABLING';
+    sub.textContent = '';
+
+  } else if (stateNum === STATE.READY) {
+    btn.classList.add('btn-start');
+    badge.classList.add('s-starting');
+    area.classList.add('glow-green');
+    lbl.textContent = 'START';
+    sub.textContent = 'Ready — press to run';
+    const dots = document.createElement('div');
+    dots.className = 'btn-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    btn.insertBefore(dots, sub);
+
+  } else if (stateNum === STATE.AUTOMATIC) {
+    btn.classList.add('btn-stop');
+    badge.classList.add('s-running');
+    area.classList.add('glow-red');
+    lbl.textContent = 'STOP';
+    sub.textContent = 'Running';
+
+  } else if (stateNum === STATE.ERROR) {
+    badge.classList.add('s-error');
+    if (inhibited) {
+      btn.classList.add('btn-busy');
+      btn.disabled = true;
+      lbl.textContent = 'RESET';
+      sub.textContent = 'Reset inhibited';
+    } else {
+      btn.classList.add('btn-reset');
+      area.classList.add('glow-amber');
+      lbl.textContent = 'RESET';
+      sub.textContent = 'Press to reset';
+    }
+
+  } else if (stateNum === STATE.RESETTING) {
+    btn.classList.add('btn-busy');
+    badge.classList.add('s-resetting');
+    area.classList.add('glow-amber');
+    btn.disabled = true;
+    lbl.textContent = 'RESETTING';
+    sub.textContent = '';
+
+  } else {
+    // CALIBRATION / GRR / DUMMY / MANUAL / other
+    btn.classList.add('btn-busy');
+    badge.classList.add('s-special');
+    btn.disabled = true;
+    lbl.textContent = STATE_NAMES[stateNum] || 'MODE';
+    sub.textContent = 'Special mode active';
+  }
+}
+
+// ─── Button handler ────────────────────────────────────────────────────────
+async function handleButton() {
+  if (buttonBusy) return;
+  buttonBusy = true;
+
+  console.log('[HMI] Button pressed — machineState:', machineState, 'resetInhibited:', resetInhibited);
+
+  try {
+    if (machineState === STATE.IDLE) {
+      // IDLE → ENABLING → READY
+      console.log('[HMI] → Sending ENABLE (bBtnStart)');
+      await plcWrite('GVL_python.bBtnStart', true);
+
+    } else if (machineState === STATE.READY) {
+      // READY → AUTOMATIC
+      console.log('[HMI] → Sending START (bBtnStart + iStatusRequest=2)');
+      await plcWrite('GVL_python.bBtnStart', true);
+      await plcWrite('GVL_python.iStatusRequest', 2);
+
+    } else if (machineState === STATE.AUTOMATIC) {
+      console.log('[HMI] → Sending STOP');
+      await plcWrite('GVL_python.bBtnStop', true);
+
+    } else if (machineState === STATE.ERROR && !resetInhibited) {
+      console.log('[HMI] → Sending RESET');
+      await plcWrite('GVL_python.bBtnReset', true);
+      await plcWrite('GVL_python.iStatusRequest', 2);
+
+    } else {
+      console.log('[HMI] → Button pressed but no action for state', machineState);
+    }
+  } finally {
+    setTimeout(() => { buttonBusy = false; }, 500);
+  }
+}
+
+// ─── PLC write helper ──────────────────────────────────────────────────────
+async function plcWrite(varName, value) {
+  console.log('[HMI] plcWrite →', varName, '=', value);
+  try {
+    const res = await fetch('/api/plc/set', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ var: varName, value }),
+    });
+    const data = await res.json();
+    console.log('[HMI] plcWrite response:', data);
+    if (!data.ok) {
+      showToast('Command failed: ' + (data.error || 'unknown'), 'error');
+    }
+    // Auto-reset BOOL pulses after 20ms so PLC always sees a rising edge
+    if (value === true) {
+      await new Promise(r => setTimeout(r, 20));
+      await fetch('/api/plc/set', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ var: varName, value: false }),
+      });
+    }
+  } catch (e) {
+    console.error('[HMI] plcWrite error:', e);
+    showToast('Connection error', 'error');
+  }
+}
+
+// ─── PLC status update ─────────────────────────────────────────────────────
+function updatePLC(plc) {
+  if (!plc) return;
+  const dot   = document.getElementById('plc-dot');
+  const label = document.getElementById('plc-label');
+  if (plc.ok) {
+    dot.className     = 'plc-dot connected';
+    label.textContent = 'PLC Connected';
+  } else {
+    dot.className     = 'plc-dot error';
+    label.textContent = 'PLC ' + (plc.state || 'Error').toUpperCase();
+  }
+}
+
+// ─── Statistics LEDs ───────────────────────────────────────────────────────
+const STAT_GROUPS = ['leak', 'flow', 'inspect', 'cluster'];
+
+function updateStatistics(stats) {
+  if (!stats) return;
+  for (const group of STAT_GROUPS) {
+    const values = stats[group];
+    if (!Array.isArray(values)) continue;
+    values.forEach((val, i) => {
+      const el = document.getElementById(`s-${group}-${i + 1}`);
+      if (!el) return;
+      el.className = 'led';
+      if (val === true)  el.classList.add('ok');
+      if (val === false && val !== null) el.classList.add('ko');
+      // null = dato non disponibile → rimane grigio
+    });
+  }
+}
+
+// ─── Poll system status ────────────────────────────────────────────────────
+async function pollStatus() {
+  try {
+    const res  = await fetch('/api/status');
+    const data = await res.json();
+
+    updatePLC(data.plc);
+    updateStatistics(data.statistics);
+
+    const newState = data.machine_state   ?? machineState;
+    const newInhib = data.reset_inhibited ?? resetInhibited;
+
+    if (newState !== machineState || newInhib !== resetInhibited) {
+      renderState(newState, newInhib);
+    }
+
+  } catch (e) {
+    // API unreachable
+    document.getElementById('plc-dot').className   = 'plc-dot error';
+    document.getElementById('plc-label').textContent = 'API offline';
+  }
+}
+
+setInterval(pollStatus, 500);
+pollStatus();
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+let toastTimer = null;
+
+function showToast(msg, type = 'error') {
+  const t = document.getElementById('toast');
+  t.textContent  = msg;
+  t.className    = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ─── Initial render ────────────────────────────────────────────────────────
+renderState(STATE.IDLE, false);
+</script>
+</body>
+</html>
